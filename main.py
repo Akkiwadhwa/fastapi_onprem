@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker, Session
 import bcrypt
 
 # --- Database Setup ---
-DATABASE_URL = "mssql+pyodbc://admin:admin@192.168.29.132/master?driver=ODBC+Driver+17+for+SQL+Server"
+DATABASE_URL = "mssql+pyodbc://admin:admin@192.168.29.132/master?driver=ODBC+Driver+17+for+SQL+Server&timeout=180"
 
 # Create Engine, Session, and Base
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
