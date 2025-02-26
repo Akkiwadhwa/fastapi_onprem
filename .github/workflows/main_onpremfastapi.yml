@@ -60,8 +60,6 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: Stop Azure Web App Before Deployment
-        run: az webapp stop --name onpremfastapi --resource-group rg-sql-poc || true
 
       - name: Delay Before Deployment (Avoid SCM Restart Conflicts)
         run: sleep 20
@@ -73,6 +71,3 @@ jobs:
           app-name: 'onpremfastapi'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_666E259E502D4279A66AE6D8F1D8F919 }}
-
-      - name: Restart Azure Web App After Deployment
-        run: az webapp start --name onpremfastapi --resource-group rg-sql-poc || true
