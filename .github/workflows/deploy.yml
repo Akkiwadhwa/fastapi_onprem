@@ -3,33 +3,34 @@ name: Deploy FastAPI to Azure Web App
 on:
   push:
     branches:
-      - main  # Change this to your branch name
+      - main  # Or your target branch
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'  # Adjust if needed
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Archive application files
-      run: zip -r app.zip . -x "*.git*"  # Exclude .git files
+      - name: Archive application files
+        run: |
+          zip -r app.zip . -x "*.git*"
 
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'fastapi-'
-        slot-name: "Production"
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_21DB6D7508304FCE9CBC5D91DF2FE641 }}
-        package: app.zip
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'fastapi-'  # Your exact Web App name
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_21DB6D7508304FCE9CBC5D91DF2FE641 }}
+          package: app.zip

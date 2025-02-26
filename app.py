@@ -2,35 +2,33 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
-import uvicorn
 import bcrypt
 
-# Database Setup
+# --- Database Setup ---
 DATABASE_URL = "mssql+pyodbc://admin:admin@192.168.29.132/master?driver=ODBC+Driver+17+for+SQL+Server"
 
-
-
-# Server=localhost;Database=master;Trusted_Connection=True;
+# Create Engine, Session, and Base
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 Base = declarative_base()
 
-# FastAPI App
+# --- FastAPI App ---
 app = FastAPI()
 
+# --- Models ---
 class User(Base):
     __tablename__ = "users"
     
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(100), unique=True, index=True)  # Max 100 characters
-    email = Column(String(255), unique=True, index=True)  # Max 255 characters
+    username = Column(String(100), unique=True, index=True)
+    email = Column(String(255), unique=True, index=True)
     password = Column(String(255))  # Store hashed password
 
 
-# Create Tables
+# Create Tables on Startup
 Base.metadata.create_all(bind=engine)
 
-# Dependency to Get DB Session
+# --- Utility / Dependency ---
 def get_db():
     db = SessionLocal()
     try:
@@ -38,11 +36,10 @@ def get_db():
     finally:
         db.close()
 
-# Hash Password Function
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-# Routes
+# --- Routes ---
 @app.post("/users/")
 def create_user(username: str, email: str, password: str, db: Session = Depends(get_db)):
     hashed_pwd = hash_password(password)
@@ -59,6 +56,9 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return {"id": user.id, "username": user.username, "email": user.email}
 
-# Run App
-if __name__ == "__main__":
-    uvicorn.run("app:app", host="0.0.0.0", port=8000)
+
+# --- Optional: Local Development Entry Point ---
+# If you want to run locally with uvicorn:
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
