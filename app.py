@@ -62,6 +62,6 @@ def main():
 
 # --- Optional: Local Development Entry Point ---
 # If you want to run locally with uvicorn:
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
