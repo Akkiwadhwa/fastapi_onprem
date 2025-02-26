@@ -14,10 +14,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read # This is required for actions/checkout
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Set up Python version
         uses: actions/setup-python@v5
@@ -28,22 +29,20 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-      
+
       - name: Install dependencies
         run: pip install -r requirements.txt
-        
+
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip -r release.zip . -x "venv/*" ".git/*" ".github/*" "__pycache__/*"
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: |
-            release.zip
-            !venv/
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,7 +50,7 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
@@ -61,7 +60,12 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      
+      - name: Stop Azure Web App Before Deployment
+        run: az webapp stop --name onpremfastapi --resource-group rg-sql-poc || true
+
+      - name: Delay Before Deployment (Avoid SCM Restart Conflicts)
+        run: sleep 20
+
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
@@ -69,3 +73,6 @@ jobs:
           app-name: 'onpremfastapi'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_666E259E502D4279A66AE6D8F1D8F919 }}
+
+      - name: Restart Azure Web App After Deployment
+        run: az webapp start --name onpremfastapi --resource-group rg-sql-poc || true
