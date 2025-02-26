@@ -6,7 +6,8 @@ import uvicorn
 import bcrypt
 
 # Database Setup
-DATABASE_URL = "mssql+pyodbc://admin:admin@localhost/master?driver=ODBC+Driver+17+for+SQL+Server"
+DATABASE_URL = "mssql+pyodbc://admin:admin@192.168.29.132/master?driver=ODBC+Driver+17+for+SQL+Server"
+
 
 
 # Server=localhost;Database=master;Trusted_Connection=True;
