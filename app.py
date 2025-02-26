@@ -5,28 +5,28 @@ from sqlalchemy.orm import sessionmaker, Session
 import bcrypt
 
 # --- Database Setup ---
-DATABASE_URL = "mssql+pyodbc://admin:admin@192.168.29.132/master?driver=ODBC+Driver+17+for+SQL+Server"
+# DATABASE_URL = "mssql+pyodbc://admin:admin@192.168.29.132/master?driver=ODBC+Driver+17+for+SQL+Server"
 
-# Create Engine, Session, and Base
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
-Base = declarative_base()
+# # Create Engine, Session, and Base
+# engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+# SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+# Base = declarative_base()
 
 # --- FastAPI App ---
 app = FastAPI()
 
 # --- Models ---
-class User(Base):
-    __tablename__ = "users"
+# class User(Base):
+#     __tablename__ = "users"
     
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(100), unique=True, index=True)
-    email = Column(String(255), unique=True, index=True)
-    password = Column(String(255))  # Store hashed password
+#     id = Column(Integer, primary_key=True, index=True)
+#     username = Column(String(100), unique=True, index=True)
+#     email = Column(String(255), unique=True, index=True)
+#     password = Column(String(255))  # Store hashed password
 
 
-# Create Tables on Startup
-Base.metadata.create_all(bind=engine)
+# # Create Tables on Startup
+# Base.metadata.create_all(bind=engine)
 
 # --- Utility / Dependency ---
 def get_db():
@@ -56,9 +56,12 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return {"id": user.id, "username": user.username, "email": user.email}
 
+@app.get("/")
+def main():
+    return 'Deployed'
 
 # --- Optional: Local Development Entry Point ---
 # If you want to run locally with uvicorn:
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
