@@ -4,3 +4,5 @@ sqlalchemy
 pyodbc
 bcrypt
 python-dotenv
+gunicorn
+pydantic
