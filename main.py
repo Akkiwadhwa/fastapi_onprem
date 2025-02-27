@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker, Session
 import bcrypt
 
 # --- Database Setup ---
-DATABASE_URL = "mssql+pyodbc://admin:admin@192.168.29.132/master?driver=ODBC+Driver+17+for+SQL+Server&timeout=180"
+DATABASE_URL = "mssql+pyodbc://admin:admin@DESKTOP-18K402V/master?driver=ODBC+Driver+17+for+SQL+Server&timeout=180"
 
 # Create Engine, Session, and Base
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
@@ -64,4 +64,4 @@ def main():
 # If you want to run locally with uvicorn:
 # if __name__ == "__main__":
 #     import uvicorn
-#     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+#     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
